@@ -54,3 +54,13 @@
 - [ ] SMTP, Teams, TCPDF and SQL Server failures are monitored and retried according to policy.
 - [ ] Staging smoke tests cover admin, normal user, inactive user and cross-site access.
 - [ ] Production monitoring confirms no unexpected legacy route traffic before removing adapters.
+
+## Audit completion gates before implementation
+- [ ] Every repository PHP entry point has an owner and retirement/adapter decision, including duplicate, backup, diagnostic, sales, SLA, and asset-helper files.
+- [ ] Exact contracts are verified for `dashboard_backup.php`, `completed_requests - Copy.php`, `edit_user_backup.php`, `report_printer.php`, `test.php`, `phpin.php`, and `convert_font.php`.
+- [ ] All `fetch()`, AJAX, and XMLHttpRequest calls are mapped to endpoint, method, payload, response keys, and dependent element IDs/classes/data attributes.
+- [ ] `get_sla_date.php` priority-to-business-day behavior and `plan_date` timezone/format are approved.
+- [ ] `it_report_complete.php` MySQL/`kva_app` usage is resolved against the PDO/SQL Server `kva_it` system before any completion migration.
+- [ ] `sales_data` schema and whether `sale.php` is in scope are confirmed.
+- [ ] IIS Task Scheduler, SQL Agent, scheduled scripts, and external Teams/SMTP configuration are checked outside the repository.
+- [ ] Legacy redirect targets `login.php`, `index.php`, and `test.php` are located and their status codes/behavior are confirmed.

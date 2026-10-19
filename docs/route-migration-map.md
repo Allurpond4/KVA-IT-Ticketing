@@ -33,3 +33,11 @@ Proposed routes assume `/it_request/it/` remains the application base path. Lega
 | `generate_pdf.php` | `GET /requests/{id}/pdf` | RequestPdfController@show | PDF stream | keep content disposition and legacy URL |
 | signature delete files | `POST /admin/users/{id}/signatures/{type}/delete` | SignatureController@delete | signature.js | legacy handler adapters |
 | `mail.php`, `test.php`, `phpin.php`, `convert_font.php` | no public route | restricted maintenance commands | none | disable or IP/admin gate before cutover |
+| `dashboard_backup.php` | `GET /dashboard` alias or retired | DashboardController@index | dashboard view | inspect usage before redirect/removal |
+| `repair_requests2.php` | `GET /requests` alias or retired | RequestController@index | requests/index.php | compare filters/status semantics before redirect |
+| `completed_requests - Copy.php` | `GET /requests/completed` alias or retired | RequestController@completed | completed view | compare output and PDF links before redirect |
+| `edit_form.php` | `GET/POST /requests/{id}/edit` alias | RequestController@edit/update | request edit view | preserve `title`, `priority`, `plan_date`, and `test.php` redirect during compatibility window |
+| `edit_user_asset.php` | `GET /admin/users/{id}/assets` | AssetController@userAssets | user asset view and asset.js | preserve fetch endpoint names and JSON shapes |
+| `get_sla_date.php` | `POST /api/requests/{id}/sla-date` | RequestController@slaDate | JSON; request form JS | add auth/validation and preserve `{plan_date, priority}` initially |
+| `it_report_complete.php` | `POST /api/requests/{id}/complete-legacy` or retired | RequestController@complete | JSON; legacy completion JS | resolve MySQL vs SQL Server ownership before migration |
+| `sale.php` | `GET /sales` or separate application | SalesController@index | sales dashboard | scope separately from ticket MVC; verify `sales_data` schema |

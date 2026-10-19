@@ -36,3 +36,21 @@
 
 ## Shared redirect targets
 `index.php`, `login.php`, `repair_requests.php`, `user_list.php`, and `asset_list.php` are referenced as implicit legacy targets. Verify their production existence before cutover.
+
+## Repository reconciliation additions
+| Existing URL / handler | Method | Parameters/body | Auth | Behavior / compatibility risk |
+|---|---|---|---|---|
+| `dashboard_backup.php` | GET | session; unknown legacy query | needs source verification | duplicate dashboard entry point; decide alias/retirement |
+| `repair_requests2.php` | GET | `page`, `search`, `operator_filter`, `date_from`, `date_to` | session; admin/all vs department/site scope | alternate pending/in-progress listing; preserve or retire explicitly |
+| `completed_requests - Copy.php` | GET | likely completed-list filters; exact contract needs verification | needs source verification | duplicate completed-list entry point; do not assume equivalent |
+| `edit_form.php` | GET, POST | `id`, `title`, `priority`, `plan_date` | session via `auth.php` | updates `repair_requests`, redirects to `test.php`; distinct from `edit_request.php` |
+| `edit_user_asset.php` | GET, browser `fetch()` POST | user `id`; JSON asset assignment fields | session; page checks login, mutation endpoints need separate auth | renders current/history assets and calls `get_available_assets.php`, `assign_asset.php`, `return_asset.php` |
+| `get_sla_date.php` | POST JSON | raw JSON `issue_id` | no explicit auth check | computes business-day date from `priority`; returns `{plan_date, priority}` |
+| `it_report_complete.php` | POST JSON | raw JSON `issue_id` | session + `auth.php` | marks request Completed using `mysqli`/MySQL; conflicting DB boundary and completion side effect |
+| `sale.php` | GET | `year` | session; allows `admin`/`it` | sales dashboard backed by `sales_data`; outside ticket scope but must be routed or quarantined |
+| `convert_font.php`, `phpin.php`, `test.php` | direct GET/POST varies | tool/diagnostic inputs unknown | unknown | no public production route until source review and access restriction |
+
+## Contract gaps requiring verification
+- Exact routes, parameters, redirects, and JavaScript dependencies in `dashboard_backup.php`, `completed_requests - Copy.php`, `edit_user_backup.php`, and `report_printer.php` were not fully verified.
+- The repository contains no `login.php`, although multiple redirects point to it; production/source backup availability is unverified.
+- AJAX/fetch consumers must be inventoried from `edit_user.php` and related pages, including endpoint URLs, JSON keys, HTTP methods, and element IDs/data attributes—not only server handlers.

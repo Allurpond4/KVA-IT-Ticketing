@@ -35,3 +35,12 @@
 - duplicated page variants มี query/status semantics ไม่เหมือนกัน
 - ไม่มี centralized error handling, input validation, audit log หรือ transaction policy กลาง
 - SQL Server syntax (`OFFSET ... FETCH`, `GETDATE()`, `+` string concat) ผูกกับ dialect
+
+## Reconciliation findings
+- Additional PHP entry points present in the repository and requiring disposition: `dashboard_backup.php`, `repair_requests2.php`, `completed_requests - Copy.php`, `edit_form.php`, `edit_user_asset.php`, `edit_user_backup.php`, `get_sla_date.php`, `it_report_complete.php`, `sale.php`, and `repair_requests2.php`.
+- `sale.php` is a separate sales dashboard, not an IT-ticket route; it reads `sales_data` and has an `year` query parameter. It must not be silently included in the ticket MVC migration.
+- `it_report_complete.php` is a separate completion mutation using `mysqli`, hard-coded MySQL credentials/database `kva_app`, and `issue_id` JSON input; this conflicts with the PDO/SQL Server architecture and needs an explicit retirement or database-boundary decision.
+- `edit_form.php` is an alternate request update form using `id`, `title`, `priority`, and `plan_date`, and redirects to `test.php`; it is not equivalent to `edit_request.php`.
+- `get_sla_date.php` is a JSON POST endpoint consuming raw JSON `issue_id` and reading `repair_requests.priority`; it is missing from the route and security inventory.
+- `edit_user_asset.php` contains user/asset assignment and history reads plus browser `fetch()` calls to `get_available_assets.php`, `assign_asset.php`, and `return_asset.php`; its element IDs/data attributes are part of the compatibility surface.
+- Scheduled/background processing was not discoverable from repository files; IIS Task Scheduler, SQL Agent, and external webhook/job configuration remain unverified.

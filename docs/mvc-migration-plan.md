@@ -42,3 +42,9 @@ public/assets/                    # CSS/JS/images
 
 ## Migration gates
 Do not switch a route until its old method, parameters, response shape, redirects, authorization and side effects are covered by acceptance tests. Do not delete legacy handlers until access logs show no remaining clients and rollback is available.
+
+## Reconciliation additions
+- Inventory and classify duplicate/backup routes before implementation: `dashboard_backup.php`, `repair_requests2.php`, `completed_requests - Copy.php`, `edit_user_backup.php`, `edit_form.php`, and `report_printer.php`.
+- Keep `sale.php` outside ticket migration unless the owner confirms shared scope; model its `sales_data` dependency separately.
+- Resolve the `it_report_complete.php` MySQL/`kva_app` path before migrating completion behavior into the PDO/SQL Server application.
+- Treat `get_sla_date.php` and the asset helper endpoints as public compatibility contracts for their existing JavaScript callers, while adding authentication, input validation, and stable JSON error envelopes.
