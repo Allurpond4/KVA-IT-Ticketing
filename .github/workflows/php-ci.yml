@@ -1,0 +1,74 @@
+name: PHP CI
+
+on:
+  push:
+    branches:
+      - v0/dashboard-redesign
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read PHP version from composer.json
+        id: php-version
+        shell: bash
+        run: |
+          version="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          composer = json.loads(Path("composer.json").read_text())
+          requirement = composer.get("require", {}).get("php")
+          print(requirement or "8.2")
+          PY
+          )"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ steps.php-version.outputs.version }}
+          extensions: mbstring
+          coverage: none
+          tools: composer
+
+      - name: Show PHP version
+        run: php --version
+
+      - name: Show Composer version
+        run: composer --version
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Generate optimized autoload files
+        run: composer dump-autoload -o
+
+      - name: Check application PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          find config public src tests -type f -name '*.php' -print0 \
+            | xargs -0 -r -n1 php -l
+
+      - name: Run router and middleware tests
+        run: php tests/RouterMiddlewareTest.php
+
+      - name: Run Composer test script
+        run: composer run-script test
+
+      - name: Check patch whitespace
+        run: git diff --check
