@@ -1,0 +1,5 @@
+/vendor/
+/storage/logs/
+.env
+.env.*
+!.env.example
